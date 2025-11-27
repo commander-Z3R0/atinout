@@ -60,6 +60,11 @@ jobs:
           path: atinout-nightly-arm64_*.deb
 
 
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Create tag
         id: create_tag
         run: |
@@ -68,8 +73,7 @@ jobs:
           git config user.email "github-actions@github.com"
           git tag -a "$TAG" -m "Nightly build $TAG"
           git push origin "$TAG"
-          echo "::set-output name=tag::$TAG"
-
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
         id: create_release
