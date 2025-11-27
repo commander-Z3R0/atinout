@@ -8,6 +8,8 @@ on:
 jobs:
   build-arm64-debian:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout atinout source
         id: git-checkout
