@@ -51,13 +51,13 @@ jobs:
         run: dpkg-deb --build package
 
       - name: Rename package for upload
-        run: mv package.deb atinout-nightly-arm64_$(date +%Y%m%d).deb
+        run: mv package.deb atinout-nightly-arm64.deb
 
       - name: Archive deb package as artifact
         uses: actions/upload-artifact@v4
         with:
           name: atinout-nightly-arm64
-          path: atinout-nightly-arm64_*.deb
+          path: atinout-nightly-arm64.deb
 
 
       - name: Checkout
@@ -90,8 +90,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: atinout-nightly-arm64_*.deb
-          asset_name: atinout-nightly-arm64_$(date +%Y%m%d).deb
+          asset_path: atinout-nightly-arm64.deb
+          asset_name: atinout-nightly-arm64.deb
           asset_content_type: application/vnd.debian.binary-package
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
