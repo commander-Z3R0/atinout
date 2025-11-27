@@ -59,12 +59,24 @@ jobs:
           name: atinout-nightly-arm64
           path: atinout-nightly-arm64_*.deb
 
+
+      - name: Create tag
+        id: create_tag
+        run: |
+          TAG="nightly-$(date +%Y%m%d)"
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag -a "$TAG" -m "Nightly build $TAG"
+          git push origin "$TAG"
+          echo "::set-output name=tag::$TAG"
+
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         with:
-          TAG="nightly-$(date +%Y%m%d)"
-          release_name: Atinout Nightly $(date +%Y%m%d)
+          tag_name: ${{ steps.create_tag.outputs.tag }}
+          release_name: Nightly Release ${{ steps.create_tag.outputs.tag }}
           draft: false
           prerelease: true
         env:
