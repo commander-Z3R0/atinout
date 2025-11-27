@@ -52,7 +52,7 @@ jobs:
         run: mv package.deb atinout-nightly-arm64_$(date +%Y%m%d).deb
 
       - name: Archive deb package as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: atinout-nightly-arm64
           path: atinout-nightly-arm64_*.deb
