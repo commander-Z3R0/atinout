@@ -19,7 +19,7 @@ jobs:
           git status
       
       - name: Install build dependencies
-        run: sudo apt-get update && sudo apt-get install -y build-essential gcc dpkg-dev fakeroot
+        run: sudo apt-get update && sudo apt-get install -y build-essential gcc dpkg-dev fakeroot ronn
 
       - name: Patch Makefile
         run: sed -i 's/-Werror//' atinout/Makefile
