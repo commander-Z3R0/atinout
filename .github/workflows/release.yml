@@ -26,9 +26,8 @@ jobs:
 
       - name: Build atinout binary
         run: |
-          cd atinout
-          gcc -o atinout -O2 atinout.c
-
+          make
+          
       - name: Prepare deb package directory
         run: |
           mkdir -p package/DEBIAN
