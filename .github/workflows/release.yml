@@ -1,0 +1,58 @@
+name: Build Atinout nightly for Debian arm64
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  
+  workflow_dispatch:     
+
+jobs:
+  build-arm64-debian:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout atinout source
+        id: git-checkout
+        run: |
+          for i in {1..3}; do
+            git clone git://git.code.sf.net/p/atinout/code atinout && break || sleep 10
+          done
+          cd atinout
+          git status
+      
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential gcc dpkg-dev fakeroot
+
+      - name: Patch Makefile
+        run: sed -i 's/-Werror//' atinout/Makefile
+
+      - name: Build atinout binary
+        run: |
+          cd atinout
+          gcc -o atinout -O2 atinout.c
+
+      - name: Prepare deb package directory
+        run: |
+          mkdir -p package/DEBIAN
+          mkdir -p package/usr/bin
+          cp atinout/atinout package/usr/bin/
+
+      - name: Create deb control file
+        run: |
+          echo "Package: atinout-nightly" > package/DEBIAN/control
+          echo "Version: 0.9.1-nightly-$(date +%Y%m%d)" >> package/DEBIAN/control
+          echo "Section: utils" >> package/DEBIAN/control
+          echo "Priority: optional" >> package/DEBIAN/control
+          echo "Architecture: arm64" >> package/DEBIAN/control
+          echo "Maintainer: Commander-Z3R0" >> package/DEBIAN/control
+          echo "Description: Atinout build package for Debian arm64" >> package/DEBIAN/control
+
+      - name: Build deb package
+        run: dpkg-deb --build package
+
+      - name: Rename package for upload
+        run: mv package.deb atinout-nightly-arm64_$(date +%Y%m%d).deb
+
+      - name: Archive deb package as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: atinout-nightly-arm64
+          path: atinout-nightly-arm64_*.deb
