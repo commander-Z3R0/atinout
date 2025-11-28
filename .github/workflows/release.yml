@@ -38,8 +38,8 @@ jobs:
 
       - name: Create deb control file
         run: |
-          echo "Package: atinout-nightly" > package/DEBIAN/control
-          echo "Version: 0.9.1-nightly-$(date +%Y%m%d)" >> package/DEBIAN/control
+          echo "Package: atinout" > package/DEBIAN/control
+          echo "Version: 0.9.1-$(date +%Y%m%d)" >> package/DEBIAN/control
           echo "Section: utils" >> package/DEBIAN/control
           echo "Priority: optional" >> package/DEBIAN/control
           echo "Architecture: arm64" >> package/DEBIAN/control
