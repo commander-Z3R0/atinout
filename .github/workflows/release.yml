@@ -11,7 +11,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout atinout source
+      - name: Checkout source
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -27,18 +27,16 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y build-essential gcc-aarch64-linux-gnu dpkg-dev fakeroot ronn
 
       - name: Patch Makefile
-        run: sed -i 's/-Werror//' atinout/Makefile
+        run: sed -i 's/-Werror//' Makefile
 
       - name: Build atinout binary
-        run: |
-          cd atinout
-          make CC=aarch64-linux-gnu-gcc
+        run: make CC=aarch64-linux-gnu-gcc
        
       - name: Prepare deb package directory
         run: |
           mkdir -p package/DEBIAN
           mkdir -p package/usr/bin
-          cp atinout/atinout package/usr/bin/
+          cp atinout package/usr/bin/
 
       - name: Create deb control file
         run: |
