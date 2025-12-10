@@ -2,7 +2,7 @@ name: Build Atinout nightly for Debian arm64
 
 on:
   schedule:
-    - cron: '0 */12 * * *'  
+    - cron: '0 */12 * * *'
   workflow_dispatch:     
 
 jobs:
@@ -18,8 +18,10 @@ jobs:
 
       - name: Pull latest changes
         run: |
-          git fetch --all
-          git reset --hard origin/master
+          git fetch --all --tags
+          BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+          git checkout $BRANCH
+          git reset --hard "origin/$BRANCH"
 
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential gcc-aarch64-linux-gnu dpkg-dev fakeroot ronn
@@ -60,14 +62,17 @@ jobs:
           name: atinout-nightly-arm64
           path: /tmp/atinout-nightly-arm64.deb
 
-      - name: Remove previous nightly tag
+      - name: Remove previous nightly tag and release
         run: |
           git fetch --tags
-          PREV_TAG=$(git tag -l "nightly*" | sort -V | tail -n 1)
+          PREV_TAG=$(git tag -l "nightly")
           if [ -n "$PREV_TAG" ]; then
+            gh release delete "$PREV_TAG" --yes || true
             git tag -d "$PREV_TAG"
-            git push --delete origin "$PREV_TAG"
+            git push --delete origin "$PREV_TAG" || true
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create nightly tag
         id: create_tag
