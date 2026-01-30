@@ -1,6 +1,7 @@
-name: Build Atinout release for Debian arm64
+name: Build Atinout for Debian arm64
 
 on:
+  workflow_dispatch:     # Permite builds manuales
   push:
     tags:
       - "v*"
@@ -22,11 +23,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential gcc-aarch64-linux-gnu dpkg-dev fakeroot ronn
 
-      - name: Extract version from tag
+      - name: Determine version
         id: version
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "${GITHUB_REF_NAME}" == refs/tags/* ]]; then
+            # Si es un tag, usa la versión del tag
+            VERSION="${GITHUB_REF_NAME#refs/tags/v}"
+          else
+            # Si es dispatch/manual, genera una versión numérica válida
+            VERSION="0.9.1+manual$(date +%Y%m%d%H%M)"
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Using version: $VERSION"
 
       - name: Patch Makefile
         run: sed -i 's/-Werror//' Makefile
